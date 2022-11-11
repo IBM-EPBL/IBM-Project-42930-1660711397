@@ -1,0 +1,98 @@
+Model Building
+Importing Libraries
+
+import numpy as np
+import tensorflow
+from tensorflow.keras.models import Sequential
+from tensorflow.keras import layers
+
+from tensorflow.keras.layers import Dense,Flatten
+
+from tensorflow.keras.layers import Conv2D,MaxPooling2D
+import keras
+model= keras.Sequential()
+Adding CNN Layers
+
+#adding model layer
+model.add(Conv2D(32,(3,3),input_shape=(64,64,3),activation='relu'))
+model.add(MaxPooling2D(pool_size=(2,2)))
+model.add(Conv2D(32,(3,3),activation='relu'))
+model.add(MaxPooling2D(pool_size=(2,2)))
+model.add(Flatten())
+Adding Dense Layers
+
+model.add(Dense(32))
+model.add(Dense(6,activation='softmax'))
+
+model.summary()
+Model: "sequential"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ conv2d (Conv2D)             (None, 62, 62, 32)        896       
+                                                                 
+ max_pooling2d (MaxPooling2D  (None, 31, 31, 32)       0         
+ )                                                               
+                                                                 
+ conv2d_1 (Conv2D)           (None, 29, 29, 32)        9248      
+                                                                 
+ max_pooling2d_1 (MaxPooling  (None, 14, 14, 32)       0         
+ 2D)                                                             
+                                                                 
+ flatten (Flatten)           (None, 6272)              0         
+                                                                 
+ dense (Dense)               (None, 32)                200736    
+                                                                 
+ dense_1 (Dense)             (None, 6)                 198       
+                                                                 
+=================================================================
+Total params: 211,078
+Trainable params: 211,078
+Non-trainable params: 0
+_________________________________________________________________
+Configuring the learning processmodel.compile(optimizer='adam',loss='categorical_crossentropy',metrics=['accuracy'])
+Train the Model
+
+model.fit_generator(generator=x_train,steps_per_epoch = len(x_train), epochs=10, validation_data=x_test,validation_steps = len(x_test))
+:1: UserWarning: `Model.fit_generator` is deprecated and will be removed in a future version. Please use `Model.fit`, which supports generators.
+  model.fit_generator(generator=x_train,steps_per_epoch = len(x_train), epochs=10, validation_data=x_test,validation_steps = len(x_test))
+Epoch 1/10
+480/480 [==============================] - 293s 609ms/step - loss: 1.3855 - accuracy: 0.4979 - val_loss: 1.4711 - val_accuracy: 0.4818
+Epoch 2/10
+480/480 [==============================] - 112s 233ms/step - loss: 0.6817 - accuracy: 0.7736 - val_loss: 0.6056 - val_accuracy: 0.7930
+Epoch 3/10
+480/480 [==============================] - 111s 232ms/step - loss: 0.3508 - accuracy: 0.8937 - val_loss: 0.5459 - val_accuracy: 0.8554
+Epoch 4/10
+480/480 [==============================] - 112s 233ms/step - loss: 0.2939 - accuracy: 0.9133 - val_loss: 0.3885 - val_accuracy: 0.8777
+Epoch 5/10
+480/480 [==============================] - 115s 239ms/step - loss: 0.2541 - accuracy: 0.9241 - val_loss: 0.3589 - val_accuracy: 0.8847
+Epoch 6/10
+480/480 [==============================] - 113s 236ms/step - loss: 0.2280 - accuracy: 0.9348 - val_loss: 0.3392 - val_accuracy: 0.9007
+Epoch 7/10
+480/480 [==============================] - 119s 248ms/step - loss: 0.2161 - accuracy: 0.9372 - val_loss: 0.3637 - val_accuracy: 0.8911
+Epoch 8/10
+480/480 [==============================] - 113s 235ms/step - loss: 0.2000 - accuracy: 0.9403 - val_loss: 0.3671 - val_accuracy: 0.8873
+Epoch 9/10
+480/480 [==============================] - 116s 241ms/step - loss: 0.1897 - accuracy: 0.9434 - val_loss: 0.3255 - val_accuracy: 0.9010
+Epoch 10/10
+480/480 [==============================] - 112s 234ms/step - loss: 0.1755 - accuracy: 0.9479 - val_loss: 0.3082 - val_accuracy: 0.9087
+Saving the model
+
+model.save('ECG.h5')
+Test the Model
+
+from tensorflow.keras.models import load_modelfrom tensorflow.keras.models import load_model
+from keras.preprocessing import image
+model=load_model('C:\\Users\\User1\\Downloads\\data\\training\\ECG.h5')
+img=image.load_img("C:\\Users\\User1\\Downloads\\data\\Flask\\uploads\\PAC.png",target_size=(64,64))
+x=image.img_to_array(img)
+x=np.expand_dims(x,axis=0)
+pred = model.predict(x)
+y_pred=np.argmax(pred)
+y_pred
+2
+index=['left Bundle Branch block','Normal','Premature Atrial Contraction','Premature Ventricular Contraction','Right Bundle Branch Block','Ventricular Fibrillation']
+result = str(index[y_pred])
+result
+'Premature Atrial Contraction'
+ 
